@@ -22,14 +22,15 @@
 
   <meta name="description" content="本文是对代码随想录第六章（栈与队列）的学习记录。 用栈实现队列[go]请你仅使用两个栈实现先入先出队列。队列应当支持一般队列支持的所有操作（push、pop、peek、empty）  需要使用两个栈，push操作时将数据放进输入栈，pop操作时，将输入栈数据导出到输出栈，再从输出栈弹出数据 时间复杂度: push&#x2F;empty O(1)      pop&#x2F;peek O(n) 空间">
 <meta property="og:type" content="article">
-<meta property="og:title" content="算法学习记录-双指针法">
+<meta property="og:title" content="算法学习记录-栈与队列">
 <meta property="og:url" content="http://example.com/2023/07/31/leetcode-6/index.html">
 <meta property="og:site_name" content="Wang DaLei&#39;s Blog">
 <meta property="og:description" content="本文是对代码随想录第六章（栈与队列）的学习记录。 用栈实现队列[go]请你仅使用两个栈实现先入先出队列。队列应当支持一般队列支持的所有操作（push、pop、peek、empty）  需要使用两个栈，push操作时将数据放进输入栈，pop操作时，将输入栈数据导出到输出栈，再从输出栈弹出数据 时间复杂度: push&#x2F;empty O(1)      pop&#x2F;peek O(n) 空间">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-07-31T01:39:54.808Z">
-<meta property="article:modified_time" content="2023-07-31T06:56:47.982Z">
+<meta property="article:modified_time" content="2023-07-31T10:46:04.148Z">
 <meta property="article:author" content="Wang DaLei">
+<meta property="article:tag" content="leetcode">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://example.com/2023/07/31/leetcode-6/">
@@ -45,7 +46,7 @@
   };
 </script>
 
-  <title>算法学习记录-双指针法 | Wang DaLei's Blog</title>
+  <title>算法学习记录-栈与队列 | Wang DaLei's Blog</title>
   
 
 
@@ -127,6 +128,11 @@
     <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
 
   </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
@@ -173,7 +179,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          算法学习记录-双指针法
+          算法学习记录-栈与队列
         </h1>
 
         <div class="post-meta">
@@ -184,7 +190,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2023-07-31 09:39:54 / 修改时间：14:56:47" itemprop="dateCreated datePublished" datetime="2023-07-31T09:39:54+08:00">2023-07-31</time>
+              <time title="创建时间：2023-07-31 09:39:54 / 修改时间：18:46:04" itemprop="dateCreated datePublished" datetime="2023-07-31T09:39:54+08:00">2023-07-31</time>
             </span>
 
           
@@ -233,12 +239,31 @@
 
 <h1 id="逆波兰表达式求值-go"><a href="#逆波兰表达式求值-go" class="headerlink" title="逆波兰表达式求值[go]"></a>逆波兰表达式求值<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/evaluate-reverse-polish-notation/">[go]</a></h1><p><strong>给你一个字符串数组 <code>tokens</code> ，表示一个根据 <a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E9%80%86%E6%B3%A2%E5%85%B0%E5%BC%8F/128437">逆波兰表示法</a> 表示的算术表达式。<br>请你计算该表达式。返回一个表示表达式值的整数。</strong></p>
 <ul>
-<li>匹配问题是栈的强项，逆波兰表达式维护两个栈：数值和运算符</li>
+<li>匹配问题是栈的强项，建立一个中间栈存放运算数据，遇到运算符后取两个数进行计算，结果重新入栈</li>
+<li>注意算数表达式的运算顺序，栈中先弹出的是右边的值，后弹出的是左边的值</li>
 <li>时间复杂度: O(n)</li>
 <li>空间复杂度: O(n)</li>
 </ul>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">string <span class="title">removeDuplicates</span><span class="params">(string s)</span> </span>&#123;</span><br><span class="line">        std::stack&lt;<span class="type">char</span>&gt; stk;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; s.<span class="built_in">size</span>(); i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(stk.<span class="built_in">empty</span>() || stk.<span class="built_in">top</span>() != s[i])&#123;</span><br><span class="line">                stk.<span class="built_in">push</span>(s[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                stk.<span class="built_in">pop</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        s = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        <span class="keyword">while</span>(!stk.<span class="built_in">empty</span>())&#123;</span><br><span class="line">            s += stk.<span class="built_in">top</span>();</span><br><span class="line">            stk.<span class="built_in">pop</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">reverse</span>(s.<span class="built_in">begin</span>(),s.<span class="built_in">end</span>());</span><br><span class="line">        <span class="keyword">return</span> s;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">evalRPN</span><span class="params">(vector&lt;string&gt;&amp; tokens)</span> </span>&#123;</span><br><span class="line">        std::stack&lt;<span class="type">int</span>&gt; stk;</span><br><span class="line">        <span class="type">int</span> a, b, c;</span><br><span class="line">        <span class="keyword">for</span>(string str : tokens)&#123;</span><br><span class="line">            <span class="keyword">if</span>(str == <span class="string">&quot;+&quot;</span> || str == <span class="string">&quot;-&quot;</span> || str == <span class="string">&quot;*&quot;</span>|| str == <span class="string">&quot;/&quot;</span>)&#123;</span><br><span class="line">                b = stk.<span class="built_in">top</span>();</span><br><span class="line">                stk.<span class="built_in">pop</span>();</span><br><span class="line">                a = stk.<span class="built_in">top</span>();</span><br><span class="line">                stk.<span class="built_in">pop</span>();</span><br><span class="line">                <span class="keyword">if</span>(str == <span class="string">&quot;+&quot;</span>)      c = a + b;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(str == <span class="string">&quot;-&quot;</span>) c = a - b;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(str == <span class="string">&quot;*&quot;</span>) c = a * b;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span>(str == <span class="string">&quot;/&quot;</span>) c = a / b;</span><br><span class="line">                stk.<span class="built_in">push</span>(c);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                stk.<span class="built_in">push</span>(<span class="built_in">stoi</span>(str));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> stk.<span class="built_in">top</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
+<h1 id="滑动窗口最大值-go"><a href="#滑动窗口最大值-go" class="headerlink" title="滑动窗口最大值[go]"></a>滑动窗口最大值<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/sliding-window-maximum/">[go]</a></h1><p><strong>给你一个整数数组 <code>nums</code>，有一个大小为 <code>k</code> 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 <code>k</code> 个数字。滑动窗口每次只向右移动一位。</strong></p>
+<ul>
+<li>如果使用暴力算法，每次滑动窗口时都要找到最大值，时间复杂度为O(n*k)</li>
+<li>可以维护一个单调队列，push时如果value值大于入口元素的值，就把队列中小于value的元素全部弹出（因为滑动窗口是从左向右移动的，所以当出现最大值时，左边的信息可以释放）</li>
+<li>pop时如果窗口移除的元素等于队列出口，则将出口元素弹出，否则不进行任何操作（因为最大值没有弹出时，滑动窗口中最大值不变）</li>
+<li>时间复杂度: O(n)</li>
+<li>空间复杂度: O(k)</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyQueue</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    std::deque&lt;<span class="type">int</span>&gt; que;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">MyQueue</span>()&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">push</span><span class="params">(<span class="type">int</span> value)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(que.<span class="built_in">empty</span>())&#123;</span><br><span class="line">            que.<span class="built_in">push_front</span>(value);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span>(que.<span class="built_in">front</span>() &lt; value)&#123;</span><br><span class="line">            que.<span class="built_in">clear</span>();</span><br><span class="line">            que.<span class="built_in">push_front</span>(value);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">while</span>(que.<span class="built_in">back</span>() &lt; value)&#123;</span><br><span class="line">                que.<span class="built_in">pop_back</span>();</span><br><span class="line">            &#125;</span><br><span class="line">            que.<span class="built_in">push_back</span>(value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">pop</span><span class="params">(<span class="type">int</span> value)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(que.<span class="built_in">front</span>() == value)&#123;</span><br><span class="line">            que.<span class="built_in">pop_front</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">front</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> que.<span class="built_in">front</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">maxSlidingWindow</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> k)</span> </span>&#123;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; result;</span><br><span class="line">        MyQueue que;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; k; i++)&#123;</span><br><span class="line">            que.<span class="built_in">push</span>(nums[i]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        result.<span class="built_in">push_back</span>(que.<span class="built_in">front</span>());</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i = k; i &lt; nums.<span class="built_in">size</span>(); i++)&#123;</span><br><span class="line">            que.<span class="built_in">pop</span>(nums[i - k]);</span><br><span class="line">            que.<span class="built_in">push</span>(nums[i]);</span><br><span class="line">            result.<span class="built_in">push_back</span>(que.<span class="built_in">front</span>());</span><br><span class="line">        &#125;        </span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h1 id="前K个高频元素-go"><a href="#前K个高频元素-go" class="headerlink" title="前K个高频元素[go]"></a>前K个高频元素<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/top-k-frequent-elements/">[go]</a></h1><p><strong>TODO</strong>     这题先放着，看了堆和二叉树再做吧</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本章主要介绍了栈和队列的使用，其中：</p>
+<ul>
+<li><code>用栈实现队列、用队列实现栈</code>是对栈和队列结构的表述</li>
+<li><code>有效的括号、删除字符串中的所有相邻重复项、逆波兰表达式求值</code>利用了栈先入后出的特性做匹配</li>
+<li><code>滑动窗口最大值</code>介绍了单调队列的使用</li>
+<li><code>前K个高频元素</code>采用了堆进行排序</li>
+</ul>
 
     </div>
 
@@ -247,6 +272,9 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/leetcode/" rel="tag"># leetcode</a>
+          </div>
 
         
 
@@ -315,7 +343,7 @@
       
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%A8%E6%A0%88%E5%AE%9E%E7%8E%B0%E9%98%9F%E5%88%97-go"><span class="nav-number">1.</span> <span class="nav-text">用栈实现队列[go]</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%A8%E9%98%9F%E5%88%97%E5%AE%9E%E7%8E%B0%E6%A0%88-go"><span class="nav-number">2.</span> <span class="nav-text">用队列实现栈[go]</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%89%E6%95%88%E7%9A%84%E6%8B%AC%E5%8F%B7-go"><span class="nav-number">3.</span> <span class="nav-text">有效的括号[go]</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E7%9A%84%E6%89%80%E6%9C%89%E7%9B%B8%E9%82%BB%E9%87%8D%E5%A4%8D%E9%A1%B9-go"><span class="nav-number">4.</span> <span class="nav-text">删除字符串中的所有相邻重复项[go]</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%86%E6%B3%A2%E5%85%B0%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC-go"><span class="nav-number">5.</span> <span class="nav-text">逆波兰表达式求值[go]</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%A8%E6%A0%88%E5%AE%9E%E7%8E%B0%E9%98%9F%E5%88%97-go"><span class="nav-number">1.</span> <span class="nav-text">用栈实现队列[go]</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%A8%E9%98%9F%E5%88%97%E5%AE%9E%E7%8E%B0%E6%A0%88-go"><span class="nav-number">2.</span> <span class="nav-text">用队列实现栈[go]</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%89%E6%95%88%E7%9A%84%E6%8B%AC%E5%8F%B7-go"><span class="nav-number">3.</span> <span class="nav-text">有效的括号[go]</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%AD%E7%9A%84%E6%89%80%E6%9C%89%E7%9B%B8%E9%82%BB%E9%87%8D%E5%A4%8D%E9%A1%B9-go"><span class="nav-number">4.</span> <span class="nav-text">删除字符串中的所有相邻重复项[go]</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%86%E6%B3%A2%E5%85%B0%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%B1%82%E5%80%BC-go"><span class="nav-number">5.</span> <span class="nav-text">逆波兰表达式求值[go]</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E6%9C%80%E5%A4%A7%E5%80%BC-go"><span class="nav-number">6.</span> <span class="nav-text">滑动窗口最大值[go]</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8DK%E4%B8%AA%E9%AB%98%E9%A2%91%E5%85%83%E7%B4%A0-go"><span class="nav-number">7.</span> <span class="nav-text">前K个高频元素[go]</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -334,6 +362,10 @@
           <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
       </div>
   </nav>
 </div>
